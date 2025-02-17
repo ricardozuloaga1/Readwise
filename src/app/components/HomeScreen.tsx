@@ -177,7 +177,7 @@ const HomeScreen: React.FC = () => {
           <div className="mb-4">
             <div {...getRootProps()} className="p-4 border-dashed border-2 rounded cursor-pointer">
               <input {...getInputProps()} />
-              <p>Drag 'n' drop a file here, or click to select a file (PDF, DOCX, TXT)</p>
+              <p>Drag &apos;n&apos; drop a file here, or click to select a file (PDF, DOCX, TXT)</p>
             </div>
           </div>
           <div className="border rounded overflow-y-auto h-96 p-4" onMouseUp={handleMouseUp}>

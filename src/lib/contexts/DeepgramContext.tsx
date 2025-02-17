@@ -43,6 +43,40 @@ const DeepgramContextProvider: FunctionComponent<DeepgramContextProviderProps> =
   const deepgramRef = useRef<LiveClient | null>(null);
   const transcriptPartsRef = useRef<string[]>([]);
 
+  const stopRecording = useCallback(() => {
+    console.log('Stopping recording...');
+    
+    if (mediaRecorderRef.current && mediaRecorderRef.current.state !== 'inactive') {
+      mediaRecorderRef.current.stop();
+      console.log('MediaRecorder stopped');
+    }
+
+    if (deepgramRef.current) {
+      deepgramRef.current.finish();
+      console.log('Deepgram connection finished');
+    }
+
+    if (audioStream) {
+      audioStream.getTracks().forEach(track => {
+        track.stop();
+        console.log('Audio track stopped:', track.label);
+      });
+      setAudioStream(null);
+    }
+
+    // Clean up the final transcript
+    if (transcriptPartsRef.current.length > 0) {
+      const finalTranscript = cleanTranscript(transcriptPartsRef.current.join(' '));
+      setTranscript(finalTranscript);
+    }
+
+    setIsRecording(false);
+    mediaRecorderRef.current = null;
+    deepgramRef.current = null;
+    transcriptPartsRef.current = [];
+    console.log('Recording cleanup completed');
+  }, [audioStream]);
+
   const startRecording = useCallback(async () => {
     try {
       // Reset states
@@ -145,41 +179,7 @@ const DeepgramContextProvider: FunctionComponent<DeepgramContextProviderProps> =
       setError(err instanceof Error ? err.message : 'Failed to start recording');
       stopRecording();
     }
-  }, []);
-
-  const stopRecording = useCallback(() => {
-    console.log('Stopping recording...');
-    
-    if (mediaRecorderRef.current && mediaRecorderRef.current.state !== 'inactive') {
-      mediaRecorderRef.current.stop();
-      console.log('MediaRecorder stopped');
-    }
-
-    if (deepgramRef.current) {
-      deepgramRef.current.finish();
-      console.log('Deepgram connection finished');
-    }
-
-    if (audioStream) {
-      audioStream.getTracks().forEach(track => {
-        track.stop();
-        console.log('Audio track stopped:', track.label);
-      });
-      setAudioStream(null);
-    }
-
-    // Clean up the final transcript
-    if (transcriptPartsRef.current.length > 0) {
-      const finalTranscript = cleanTranscript(transcriptPartsRef.current.join(' '));
-      setTranscript(finalTranscript);
-    }
-
-    setIsRecording(false);
-    mediaRecorderRef.current = null;
-    deepgramRef.current = null;
-    transcriptPartsRef.current = [];
-    console.log('Recording cleanup completed');
-  }, [audioStream]);
+  }, [stopRecording]);
 
   useEffect(() => {
     return () => {

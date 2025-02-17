@@ -204,7 +204,7 @@ export default function NewsTicker({ onArticleSelect }: NewsTickerProps) {
       window.removeEventListener('mousemove', handleDrag);
       window.removeEventListener('mouseup', handleDragEnd);
     };
-  }, [isDragging]);
+  }, [isDragging, handleDrag, handleDragEnd]);
 
   const toggleExpand = () => {
     setIsExpanded(!isExpanded);
